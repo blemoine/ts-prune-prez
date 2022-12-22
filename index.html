@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>ts-prune</title>
+
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/white.css" />
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/monokai.css" />
+
+    <style>
+      code {
+        border: 1px solid #333;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Removing Dead code</h2>
+          <h3>ts-prune</h3>
+        </section>
+
+        <section>
+          <h2>Who am I?</h2>
+          <ul
+            style="
+              display: inline-block;
+              width: 700px;
+              vertical-align: top;
+              position: relative;
+            "
+          >
+            <li>Benoît Lemoine</li>
+            <li>
+              Fullstack developer <br />(TS, Scala, Rust, ...) <br />
+              especially interested in functional programming and type
+              systems<br />
+            </li>
+            <li>
+              Working at <a href="https://www.busbud.com">Busbud</a>; we're
+              hiring!
+            </li>
+            <li>
+              <a href="https://lemoine-benoit.medium.com/"
+                >https://lemoine-benoit.medium.com/</a
+              >
+            </li>
+
+            <li>
+              <a href="https://twitter.com/benoit_lemoine">@benoit_lemoine</a>
+            </li>
+          </ul>
+          <img
+            style="display: inline-block; width: 200px; vertical-align: top"
+            src="img/Moloch.png"
+            alt="Most beautiful animal in the world: the Moloch (aka. thorny devil)"
+          />
+        </section>
+
+        <section>
+          <h2>What is dead code?</h2>
+          <ul>
+            <li class="fragment">
+              private/non exported code not called in the current file
+            </li>
+            <li class="fragment">exported code not imported anywhere</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Why is it bad?</h2>
+          <ul>
+            <li class="fragment">Slower compilation / linting</li>
+            <li class="fragment">Bigger bundles</li>
+            <li class="fragment">Increased perceived complexity</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>ts-prune</h2>
+          <a href="https://github.com/nadeesha/ts-prune"
+            >https://github.com/nadeesha/ts-prune</a
+          >
+        </section>
+
+        <section>
+          <h2>Usage</h2>
+          <pre><code>npx ts-prune</code></pre>
+        </section>
+
+        <section>
+          <h2>In the real world</h2>
+          <ul>
+            <li>
+              Exclude tests: <br /><code>ts-prune -s '.*\.test\.tsx?'</code>
+            </li>
+            <li>
+              Additional memory:<br />
+              <code>NODE_OPTIONS="--max-old-space-size=8192" ts-prune</code>
+            </li>
+            <li>
+              Ignore uselessly exported code:<br />
+              <code>ts-prune | grep -v '(used in module)'</code>
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Full CLI</h2>
+          <pre><code data-trim>NODE_OPTIONS="--max-old-space-size=8192" npx ts-prune \
+            -s '.*\.test\.tsx?' | grep \
+            -v '(used in module)'</code></pre>
+        </section>
+
+        <section>
+          <h2>Limitations</h2>
+          <ul>
+            <li class="fragment">
+              `index.ts` file re-exporting everything:
+              <code>export * from 'whatever'</code> usually exports a lot of
+              useless code
+            </li>
+            <li class="fragment">
+              Global namespaces ( <code>declare namespace XXX {}</code>) - which are deprecated - as ts-prune cannot always track where things are used
+            </li>
+          </ul>
+        </section>
+
+        <!--
+        <section>
+          Should we introduce that in the CI ? maybe with a threshold ? ```
+          #!/bin/sh OUTPUT=`yarn --silent ts-prune | wc -l`;
+          MAX_DEAD_CODE_LINES="20"; echo "$OUTPUT lines remaining, maximum set
+          to $MAX_DEAD_CODE_LINES" if [ "$OUTPUT" -gt "$MAX_DEAD_CODE_LINES" ];
+          then echo "Error, you added dead code, please remove some." exit 1 fi
+          ```
+        </section>
+        -->
+
+        <section>
+          <h2>Questions?</h2>
+        </section>
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+      });
+    </script>
+  </body>
+</html>
